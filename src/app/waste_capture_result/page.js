@@ -6,13 +6,17 @@ export default function WasteCaptureResultPage() {
     <div className="min-h-screen bg-gray-50 flex flex-col items-center">
       {/* 상단 이미지 섹션 */}
       <div className="w-full max-w-md bg-white rounded-b-3xl overflow-hidden shadow-md">
-        <Image
-          src="/buring.png" // 예시 이미지, 실제 이미지 경로로 변경 가능
-          alt="분류된 쓰레기 이미지"
-          width={400}
-          height={400}
-          className="w-full h-auto object-cover"
-        />
+        {/* 이미지 컨테이너에 고정 높이 추가 및 object-cover 적용 */}
+        <div className="relative w-full h-110">
+          {" "}
+          {/* h-96 (24rem)으로 고정 높이 설정 */}
+          <Image
+            src="/trash.png" // 예시 이미지, 실제 이미지 경로로 변경 가능
+            alt="분류된 쓰레기 이미지"
+            fill // 부모 컨테이너에 맞춰 이미지를 채움
+            className="object-cover" // 이미지가 컨테이너를 채우도록 자름
+          />
+        </div>
       </div>
 
       {/* 결과 내용 섹션 */}
