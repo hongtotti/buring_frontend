@@ -1,17 +1,39 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 
 export default function WasteCameraResultPage() {
   const router = useRouter()
+  const [displayedImage, setDisplayedImage] = useState(null)
+
+  useEffect(() => {
+    // sessionStorage에서 이미지 데이터 가져오기
+    const imageForReview = sessionStorage.getItem("capturedImageForReview")
+    if (imageForReview) {
+      setDisplayedImage(imageForReview)
+    } else {
+      // 이미지가 없으면 이전 페이지로 리다이렉트 (예: waste-capture)
+      router.replace("/waste_capture")
+    }
+
+    // 컴포넌트 언마운트 시 sessionStorage에서 이미지 데이터 제거 (선택 사항)
+    // return () => {
+    //   sessionStorage.removeItem("capturedImageForReview");
+    // };
+  }, [router])
 
   const handleRetake = () => {
-    router.push("/waste_camera") // 다시 찍기 버튼 클릭 시 카메라 페이지로 이동
+    router.push("/waste_camera") // 다시 촬영 페이지로 이동
   }
 
   const handleAnalyze = () => {
-    router.push("/waste_capture_result") // 분석하기 버튼 클릭 시 분류 결과 페이지로 이동
+    // 현재 표시된 이미지를 분류를 위해 sessionStorage에 저장하고 결과 페이지로 이동
+    if (displayedImage) {
+      sessionStorage.setItem("imageToClassify", displayedImage)
+      router.push("/waste_capture_result") // 분류 결과 페이지로 이동
+    }
   }
 
   return (
@@ -41,14 +63,17 @@ export default function WasteCameraResultPage() {
 
       {/* 캡쳐된 이미지 표시 영역 */}
       <div className="relative w-full max-w-md aspect-[3/4] bg-gray-200 rounded-xl overflow-hidden flex items-center justify-center">
-        {/* 캡쳐된 이미지 (현재는 플레이스홀더) */}
-        <Image
-          src="/placeholder.svg?height=600&width=450" // 실제 캡쳐된 이미지 경로로 변경 필요
-          alt="캡쳐된 이미지"
-          width={450}
-          height={600}
-          className="object-cover w-full h-full"
-        />
+        {displayedImage ? (
+          <Image
+            src={displayedImage || "/placeholder.svg"}
+            alt="캡쳐된 이미지"
+            width={450}
+            height={600}
+            className="object-cover w-full h-full"
+          />
+        ) : (
+          <div className="text-gray-500">이미지 로드 중...</div>
+        )}
       </div>
 
       {/* 하단 버튼 섹션 */}
@@ -61,7 +86,7 @@ export default function WasteCameraResultPage() {
         </button>
         <button
           onClick={handleAnalyze}
-          className="flex-1 py-4 bg-[#E0FF8C] text-mint-800 text-base font-bold rounded-full shadow-md transition-all hover:bg-[#D0EE7C]"
+          className="flex-1 py-4 bg-[#E0FF8C] text-green-800 text-base font-bold rounded-full shadow-md transition-all hover:bg-[#D0EE7C]"
         >
           분석하기
         </button>

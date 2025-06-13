@@ -9,7 +9,7 @@ const nextConfig = {
     return [
       {
         source: "/v1/chat/:path*",
-        destination: "http://localhost:11444/api/v1/chat/:path*",
+        destination: "http://localhost:8000/api/v1/chat/:path*",
       },
     ];
   },

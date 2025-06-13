@@ -6,14 +6,12 @@ import Image from "next/image"
 export default function WasteCameraPage() {
   const router = useRouter()
 
-  // 이 페이지는 카메라 프리뷰를 위한 것이므로, 실제 카메라 스트림을 처리하는 로직은 포함하지 않습니다.
-  // 대신, 이미지를 찍을 위치를 시각적으로 보여주기 위한 플레이스홀더를 사용합니다.
-
   const handleCaptureClick = () => {
-    // 실제 카메라 촬영 로직이 여기에 들어갈 수 있습니다.
-    // 예를 들어, 사진을 찍은 후 결과 페이지로 이동할 수 있습니다.
-    router.push("/waste_camera_result") // 이 줄을 수정했습니다.
-    // console.log("사진 촬영 버튼 클릭됨") // 이 줄은 이제 필요 없으므로 제거하거나 주석 처리할 수 있습니다.
+    // 실제 카메라 촬영 로직 대신 더미 이미지 생성 및 sessionStorage에 저장
+    const dummyImage = "/placeholder.svg?height=600&width=450" // 예시 이미지
+    sessionStorage.setItem("capturedImageForReview", dummyImage) // sessionStorage에 저장
+
+    router.push("/waste_camera_result") // 이미지 확인 페이지로 이동
   }
 
   return (

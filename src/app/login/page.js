@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import Image from "next/image" // Image 컴포넌트 사용을 위해 임포트
+import Image from "next/image"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
@@ -16,11 +16,11 @@ export default function LoginPage() {
     setError("")
     setIsLoading(true)
 
-    // 실제 로그인 로직 (API 호출 등)을 여기에 구현합니다.
-    // 여기서는 간단한 시뮬레이션을 합니다.
     if (email === "test@example.com" && password === "password") {
-      await new Promise((resolve) => setTimeout(resolve, 1000)) // 로딩 시뮬레이션
-      router.push("/") // 로그인 성공 시 메인 페이지로 이동
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+      sessionStorage.setItem("isLoggedIn", "true") // 로그인 상태 저장 (간단한 예시)
+      sessionStorage.setItem("userNickname", "테스트유저") // 테스트용 닉네임 저장
+      router.push("/main") // /main 페이지로 이동
     } else {
       setError("이메일 또는 비밀번호가 올바르지 않습니다.")
     }
@@ -30,15 +30,8 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-lg">
-        {" "}
-        {/* max-w-md 적용 */}
         <div className="flex justify-center mb-6">
-          <Image
-            src="/placeholder.svg?height=80&width=80" // 로고 또는 앱 아이콘 플레이스홀더
-            alt="앱 로고"
-            width={80}
-            height={80}
-          />
+          <Image src="/placeholder.svg?height=80&width=80" alt="앱 로고" width={80} height={80} />
         </div>
         <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">로그인</h1>
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -86,7 +79,7 @@ export default function LoginPage() {
         <div className="mt-6 text-center text-sm">
           <p className="text-gray-600">
             계정이 없으신가요?{" "}
-            <a href="#" className="text-text-green-600 hover:underline">
+            <a href="/signup" className="text-green-600 hover:underline">
               회원가입
             </a>
           </p>

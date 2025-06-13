@@ -2,60 +2,48 @@
 
 import { useState, useRef } from "react"
 import { useRouter } from "next/navigation"
+import Image from "next/image"
 
 export default function WasteCapturePage() {
   const router = useRouter()
-  const [capturedImage, setCapturedImage] = useState(null)
-  const [isLoading, setIsLoading] = useState(false)
-  const [classificationResult, setClassificationResult] = useState("")
+  const [capturedImage, setCapturedImage] = useState(null) // Base64 이미지 데이터
+  const [isLoading, setIsLoading] = useState(false) // 버튼 로딩 상태 유지
   const fileInputRef = useRef(null)
 
+  // "사진 촬영" 버튼 클릭 시 waste-camera 페이지로 이동
   const handleImageCapture = () => {
-    setCapturedImage("/placeholder.svg?height=300&width=300")
+    router.push("/waste_camera")
   }
 
+  // "갤러리에서 업로드" 시 이미지 파일 읽기
   const handleImageUpload = (e) => {
     const file = e.target.files?.[0]
     if (file) {
       const reader = new FileReader()
-      reader.onload = (event) => setCapturedImage(event.target.result)
+      reader.onload = (event) => {
+        setCapturedImage(event.target.result) // Base64 데이터 URL 저장
+      }
       reader.readAsDataURL(file)
     }
   }
 
+  // "분류하기" 버튼 클릭 시 이미지 데이터를 sessionStorage에 저장하고 결과 페이지로 이동
   const handleClassification = async () => {
     if (!capturedImage) return
 
     setIsLoading(true)
-    setClassificationResult("")
-
-    try {
-      const res = await fetch("/api/classify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ image: capturedImage }),
-      })
-
-      const data = await res.json()
-      setClassificationResult(data.label || "분류 실패")
-    } catch (err) {
-      setClassificationResult("오류 발생")
-      console.error(err)
-    } finally {
-      setIsLoading(false)
-    }
+    // 이미지 데이터를 sessionStorage에 저장
+    sessionStorage.setItem("imageToClassify", capturedImage)
+    router.push("/waste_capture_result")
+    // setIsLoading(false); // 페이지 이동 후에는 이 상태가 필요 없을 수 있습니다.
   }
 
   return (
     <div className="min-h-screen bg-[#F8FCF0] flex justify-center px-4 pt-8 pb-20">
       <div className="w-full max-w-md flex flex-col items-center space-y-8">
-        
         {/* 상단 헤더 */}
         <div className="relative w-full text-center">
-          <button
-            onClick={() => router.back()}
-            className="absolute left-0 text-lg text-gray-500"
-          >
+          <button onClick={() => router.back()} className="absolute left-0 text-lg text-gray-500">
             ←
           </button>
           <h1 className="text-xl font-bold text-gray-800">쓰레기 사진을 촬영하세요</h1>
@@ -66,9 +54,11 @@ export default function WasteCapturePage() {
         <div className="w-full">
           <div className="aspect-square border-2 border-dashed border-gray-300 rounded-2xl bg-white flex flex-col justify-center items-center text-gray-500 p-6 shadow-sm">
             {capturedImage ? (
-              <img
-                src={capturedImage}
+              <Image
+                src={capturedImage || "/placeholder.svg"} // Base64 데이터 URL 사용
                 alt="캡쳐된 이미지"
+                width={300}
+                height={300}
                 className="w-full h-full object-cover rounded-xl"
               />
             ) : (
@@ -97,22 +87,16 @@ export default function WasteCapturePage() {
             📁 갤러리에서 업로드
           </button>
 
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleImageUpload}
-            hidden
-            accept="image/*"
-          />
-        </div>
+          <input type="file" ref={fileInputRef} onChange={handleImageUpload} hidden accept="image/*" />
 
-        {/* 결과 */}
-        {classificationResult && (
-          <div className="w-full bg-white p-4 rounded-xl text-center border border-green-200 shadow-sm mt-4">
-            <p className="text-gray-600">분류 결과:</p>
-            <p className="text-lg font-bold text-green-600 mt-1">{classificationResult}</p>
-          </div>
-        )}
+          <button
+            onClick={handleClassification}
+            disabled={!capturedImage || isLoading}
+            className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white text-base font-semibold rounded-xl shadow-md transition-all disabled:opacity-50"
+          >
+            {isLoading ? "이동 중..." : "분류하기"}
+          </button>
+        </div>
       </div>
     </div>
   )

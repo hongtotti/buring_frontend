@@ -1,9 +1,18 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react" // useEffect 임포트
 
 export default function Home() {
   const [interactions, setInteractions] = useState(17)
+  const [userNickname, setUserNickname] = useState("분리왕") // 기본값 "분리왕"
+
+  useEffect(() => {
+    // 컴포넌트 마운트 시 sessionStorage에서 닉네임 가져오기
+    const storedNickname = sessionStorage.getItem("userNickname")
+    if (storedNickname) {
+      setUserNickname(storedNickname)
+    }
+  }, []) // 한 번만 실행
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col max-w-sm mx-auto">
@@ -79,7 +88,7 @@ export default function Home() {
         {/* Level and Title */}
         <div className="text-center mb-6 mt-8">
           <div className="text-green-500 text-sm font-medium mb-1">Lv. 02</div>
-          <h1 className="text-2xl font-bold text-gray-800 mb-2">분리왕</h1>
+          <h1 className="text-2xl font-bold text-gray-800 mb-2">{userNickname}</h1> {/* 닉네임으로 대체 */}
           <p className="text-gray-500 text-sm">지구에 작은 변화가 지켜보이고!</p>
         </div>
 
